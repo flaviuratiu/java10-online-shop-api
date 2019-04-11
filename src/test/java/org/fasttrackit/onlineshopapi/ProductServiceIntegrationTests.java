@@ -3,6 +3,7 @@ package org.fasttrackit.onlineshopapi;
 import org.fasttrackit.onlineshopapi.domain.Product;
 import org.fasttrackit.onlineshopapi.exception.ResourceNotFoundException;
 import org.fasttrackit.onlineshopapi.service.ProductService;
+import org.fasttrackit.onlineshopapi.steps.ProductSteps;
 import org.fasttrackit.onlineshopapi.transfer.CreateProductRequest;
 import org.fasttrackit.onlineshopapi.transfer.UpdateProductRequest;
 import org.junit.Test;
@@ -24,23 +25,18 @@ public class ProductServiceIntegrationTests {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private ProductSteps productSteps;
+
     @Test
     public void testCreateProduct_whenValidRequest_thenReturnProductWithId() {
-        Product product = createProduct();
+        Product product = productSteps.createProduct();
 
         assertThat(product, notNullValue());
         assertThat(product.getId(), greaterThan(0L));
     }
 
-    private Product createProduct() {
-        CreateProductRequest request = new CreateProductRequest();
-        request.setName("Laptop");
-        request.setPrice(10);
-        request.setQuantity(3);
-        request.setSku("fdas321k231");
 
-        return productService.createProduct(request);
-    }
 
     @Test(expected = ResourceNotFoundException.class)
     public void testGetProduct_whenProductNotFound_thenThrowResourceNotFoundException() throws ResourceNotFoundException {
@@ -49,7 +45,7 @@ public class ProductServiceIntegrationTests {
 
     @Test
     public void testGetProduct_whenExistingId_thenReturnMatchingProduct() throws ResourceNotFoundException {
-        Product product = createProduct();
+        Product product = productSteps.createProduct();
 
         Product retrievedProduct = productService.getProduct(product.getId());
 
@@ -59,7 +55,7 @@ public class ProductServiceIntegrationTests {
 
     @Test
     public void testUpdateProduct_whenValidRequestWithAllFields_thenReturnUpdatedProduct() throws ResourceNotFoundException {
-        Product createdProduct = createProduct();
+        Product createdProduct = productSteps.createProduct();
 
         UpdateProductRequest request = new UpdateProductRequest();
         request.setName(createdProduct.getName() + "_Edited");
@@ -84,7 +80,7 @@ public class ProductServiceIntegrationTests {
 
     @Test(expected = ResourceNotFoundException.class)
     public void testDeleteProduct_whenExistingId_thenProductIsDeleted() throws ResourceNotFoundException {
-        Product createdProduct = createProduct();
+        Product createdProduct = productSteps.createProduct();
 
         productService.deleteProduct(createdProduct.getId());
 
