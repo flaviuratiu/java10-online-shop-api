@@ -8,10 +8,13 @@ import java.util.Set;
 public class Cart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    private Customer customer;
+
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "cart_product",
             joinColumns = @JoinColumn(name = "cart_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
@@ -41,6 +44,14 @@ public class Cart {
 
     public void setProducts(Set<Product> products) {
         this.products = products;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     @Override

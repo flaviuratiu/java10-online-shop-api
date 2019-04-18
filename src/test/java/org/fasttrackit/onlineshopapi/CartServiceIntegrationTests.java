@@ -1,7 +1,10 @@
 package org.fasttrackit.onlineshopapi;
 
 import org.fasttrackit.onlineshopapi.domain.Cart;
+import org.fasttrackit.onlineshopapi.domain.Customer;
 import org.fasttrackit.onlineshopapi.domain.Product;
+import org.fasttrackit.onlineshopapi.exception.ResourceNotFoundException;
+import org.fasttrackit.onlineshopapi.persistence.CustomerRepository;
 import org.fasttrackit.onlineshopapi.service.CartService;
 import org.fasttrackit.onlineshopapi.steps.ProductSteps;
 import org.fasttrackit.onlineshopapi.transfer.CreateCartRequest;
@@ -29,12 +32,22 @@ public class CartServiceIntegrationTests {
     @Autowired
     private ProductSteps productSteps;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Test
-    public void createCart_whenValidRequest_thenReturnCreatedCartWithId() {
+    public void createCart_whenValidRequest_thenReturnCreatedCartWithId() throws ResourceNotFoundException {
+        Customer customer = new Customer();
+        customer.setFirstName("Test");
+
+        // todo: use service here
+        customer = customerRepository.save(customer);
+
         Product product = productSteps.createProduct();
 
         CreateCartRequest cartRequest = new CreateCartRequest();
         cartRequest.setProducts(Collections.singleton(new ProductIdentifier(product.getId())));
+        cartRequest.setCustomerId(customer.getId());
 
         Cart cart = cartService.createCart(cartRequest);
 
